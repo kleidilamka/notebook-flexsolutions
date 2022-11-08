@@ -30,7 +30,11 @@ function App() {
     const [text, setText] = useState('');
     const [list, setList] = useState(getLocalStorageList());
     const [date, setDate] = useState('');
-    const [categories, setCategories] = useState(getLocalStorageCtg());
+    const [categories, setCategories] = useState(
+        getLocalStorageCtg().filter(function (item, pos, self) {
+            return self.indexOf(item) == pos;
+        })
+    );
     const [selectedId, setSelectedId] = useState('');
     const [filteredTitle, setFilteredTitle] = useState('');
     const [selectCtg, setSelectCtg] = useState();
