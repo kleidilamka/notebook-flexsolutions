@@ -31,15 +31,17 @@ function App() {
     const [list, setList] = useState(getLocalStorageList());
     const [date, setDate] = useState('');
     const [categories, setCategories] = useState(getLocalStorageCtg());
-    const [alert, setAlert] = useState({ show: false, msg: '', type: '' });
     const [selectedId, setSelectedId] = useState('');
     const [filteredTitle, setFilteredTitle] = useState('');
+    const [selectCtg, setSelectCtg] = useState();
+    const [ctgData, setCtgData] = useState([]);
 
     const [openModal, setOpenModal] = useState(false);
 
     useEffect(() => {
         localStorage.setItem('list', JSON.stringify(list));
         localStorage.setItem('categories', JSON.stringify(categories));
+        setCtgData(list);
     }, [list, categories]);
 
     let searchFilter = list.filter((item) =>
@@ -56,10 +58,7 @@ function App() {
 
     const createNote = (e) => {
         e.preventDefault();
-        if (!title) {
-            showAlert(true, 'danger', 'Please enter a value!');
-        } else {
-            showAlert(true, 'success', 'Value added to the list!');
+        if (title) {
             const newItem = {
                 id: new Date().getTime().toString(),
                 title: title,
@@ -76,8 +75,8 @@ function App() {
         }
     };
 
-    const showAlert = (show = false, type = '', msg = '') => {
-        setAlert({ show, type, msg });
+    const changeCtg = (val) => {
+        setCtgData(list.filter((i) => i.category === val));
     };
 
     return (
@@ -114,8 +113,9 @@ function App() {
                                 criteria
                             </div>
                         )}
-                        {filteredTitle === 0
-                            ? list.map((item) => {
+
+                        {filteredTitle === ''
+                            ? ctgData.map((item) => {
                                   return (
                                       <Note
                                           key={item.id}
@@ -143,8 +143,29 @@ function App() {
                 </section>
                 <section className="section two">
                     <div className="categories">
-                        {categories.map((item) => {
-                            return <Categories item={item} key={item} />;
+                        <div
+                            onClick={() => {
+                                setSelectCtg(-1);
+                                setCtgData(list);
+                            }}
+                        >
+                            <h3>all</h3>
+                        </div>
+                        {categories.map((item, index) => {
+                            return (
+                                <div
+                                    key={index}
+                                    onClick={() => {
+                                        changeCtg(item);
+                                        setSelectCtg(index);
+
+                                        console.log(item);
+                                    }}
+                                    style={{ marginLeft: 10 }}
+                                >
+                                    <h3>{item}</h3>
+                                </div>
+                            );
                         })}
                     </div>
                     <div className="note-content-top">
