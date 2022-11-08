@@ -1,12 +1,48 @@
 import './App.css';
 import { MdOutlineModeEditOutline } from 'react-icons/md';
-import { AiOutlineCloseCircle } from 'react-icons/ai';
-import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
+import Modal from './components/Modal';
+import Note from './components/Note';
+import Categories from './components/Categories';
+
+let randomText =
+    'loremd oremd sajdh asdj pjad hjasd hjsakpd hsaj dhsadj hasploremd sajdh asdj pjad hjasd hjsakpd hsaj dhsadj oremd sajdh asdj pjad hjasd hjsakpd hsaj dhsadj hasploremd sajdh asdj pjad hjasd hjsakpd hsaj dhsadj oremd sajdh asdj pjad hjasd hjsakpd hsaj dhsadj hasploremd sajdh asdj pjad hjasd hjsakpd hsaj dhsadjoremd sajdh asdj pjad hjasd hjsakpd hsaj dhsadj hasploremd sajdh asdj pjad hjasd hjsakpd hsaj dhsadj oremd sajdh asdj pjad hjasd hjsakpd hsaj dhsadj hasploremd sajdh asdj pjad hjasd hjsakpd hsaj dhsadj oremd sajdh asdj pjad hjasd hjsakpd hsaj dhsadj hasploremd sajdh asdj pjad hjasd hjsakpd hsaj dhsadj hjasd hjsakpd hsaj dhsadj loremd sajdh asdj pjad hjasd hjsakpd hsaj dhsadj hasploremd sajdh asdj pjad hjasd hjsakpd hsaj dhsadj loremd sajdh asdj pjad hjasd hjsakpd hsaj dhsadj hasploremd sajdh asdj pjad hjasd hjsakpd hsaj dhsadj l';
+
+const getLocalStorageList = () => {
+    let list = localStorage.getItem('list');
+    if (list) {
+        return (list = JSON.parse(localStorage.getItem('list')));
+    }
+
+    return [];
+};
+
+const getLocalStorageCtg = () => {
+    let categoriesList = localStorage.getItem('categories');
+    if (categoriesList) {
+        return (categoriesList = JSON.parse(
+            localStorage.getItem('categories')
+        ));
+    }
+    return [];
+};
 
 function App() {
+    const [title, setTitle] = useState('');
+    const [category, setCategory] = useState('');
+    const [text, setText] = useState('');
+    const [list, setList] = useState(getLocalStorageList());
+    const [date, setDate] = useState('');
+    const [categories, setCategories] = useState(getLocalStorageCtg());
+    const [alert, setAlert] = useState({ show: false, msg: '', type: '' });
+
     const [openModal, setOpenModal] = useState(false);
     const [openEdit, setOpenEdit] = useState(false);
+
+    useEffect(() => {
+        localStorage.setItem('list', JSON.stringify(list));
+        localStorage.setItem('categories', JSON.stringify(categories));
+    }, [list, categories]);
 
     const toggleModal = () => {
         setOpenModal(true);
@@ -21,99 +57,60 @@ function App() {
         setOpenEdit(false);
     };
 
-    const Modal = () => {
-        return (
-            <motion.div
-                initial={{ opacity: 0, scale: 0.5 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{
-                    duration: 0.8,
-                    delay: 0.5,
-                    ease: [0, 0.71, 0.2, 1.01],
-                }}
-                className="modal-wrapper"
-            >
-                <motion.div className="modal-inputs">
-                    <input className="modal-input" placeholder="Title..." />
-                    <input className="modal-input" placeholder="Category..." />
-                    <AiOutlineCloseCircle
-                        color="red"
-                        size={30}
-                        onClick={closeModal}
-                    />
-                </motion.div>
-                <textarea
-                    className="modal-description"
-                    placeholder="Description..."
-                />
-                <button className="add-note">Add Note</button>
-            </motion.div>
-        );
+    const createNote = (e) => {
+        e.preventDefault();
+        if (!title) {
+            showAlert(true, 'danger', 'Please enter a value!');
+        } else {
+            showAlert(true, 'success', 'Value added to the list!');
+            const newItem = {
+                id: new Date().getTime().toString(),
+                title: title,
+                category: category,
+                text: text,
+                date: Date.now(),
+            };
+            setList([...list, newItem]);
+            setTitle('');
+            setCategory('');
+            setText('');
+            setDate('');
+            categories.push(newItem.category);
+        }
+    };
+
+    const showAlert = (show = false, type = '', msg = '') => {
+        setAlert({ show, type, msg });
     };
 
     return (
         <div className="App">
             <div className="root">
-                {openModal || openEdit ? <Modal /> : null}
+                {openModal || openEdit ? (
+                    <Modal
+                        closeModal={closeModal}
+                        createNote={createNote}
+                        title={title}
+                        setTitle={setTitle}
+                        category={category}
+                        setCategory={setCategory}
+                    />
+                ) : null}
                 <section className="section one">
                     <input className="input" placeholder="Search Note" />
                     <button className={`add-button`} onClick={toggleModal}>
                         Add Note
                     </button>
                     <div className="notes">
-                        {[
-                            'Agenda',
-                            'Timetable',
-                            'Shopping',
-                            'Timetable',
-                            'Shopping',
-                        ].map((item) => {
-                            return (
-                                <div className="note">
-                                    <div className="top-note">
-                                        <p>Shopping</p>
-                                        <p>{Date.now()}</p>
-                                    </div>
-                                    <div className="bottom-note">
-                                        <h4>{item}</h4>
-                                        <p>
-                                            lorem djsa hsdkjd hsdaj dhsak
-                                            dhjsadh jksahd jksahd jksahd jksah
-                                            djksahd
-                                        </p>
-                                    </div>
-                                </div>
-                            );
+                        {list.map((item) => {
+                            return <Note item={item} date={date} />;
                         })}
                     </div>
                 </section>
                 <section className="section two">
                     <div className="categories">
-                        {[
-                            'Agenda',
-                            'Timetable',
-                            'Shopping',
-                            'Agenda',
-                            'Timetable',
-                            'Shopping',
-                            'Agenda',
-                            'Timetable',
-                            'Shopping',
-                            'Agenda',
-                            'Timetable',
-                            'Shopping',
-                            'Agenda',
-                            'Timetable',
-                            'Shopping',
-                            'Agenda',
-                            'Timetable',
-                            'Shopping',
-                        ].map((item) => {
-                            return (
-                                <div className="category">
-                                    <h4>{item}</h4>
-                                </div>
-                            );
+                        {categories.map((item) => {
+                            return <Categories item={item} />;
                         })}
                     </div>
                     <div class="note-content-top">
@@ -125,125 +122,7 @@ function App() {
                         />
                     </div>
                     <div className="note-content">
-                        <p>
-                            lorem sjdh aksd hajsk dhsajk dhlorem sjdh aksd hajsk
-                            dhsajk dhlorem sjdh aksd hajsk dhsajk dhlorem sjdh
-                            aksd hajsk dhsajk dhlorem sjdh aksd hajsk dhsajk
-                            dhlorem sjdh aksd hajsk dhsajk dhlorem sjdh aksd
-                            hajsk dhsajk dhlorem sjdh aksd hajsk dhsajk dhlorem
-                            sjdh aksd hajsk dhsajk dhlorem sjdh aksd hajsk
-                            dhsajk dhlorem sjdh aksd hajsk dhsajk dhlorem sjdh
-                            aksd hajsk dhsajk dhlorem sjdh aksd hajsk dhsajk
-                            dhlorem sjdh aksd hajsk dhsajk dhlorem sjdh aksd
-                            hajsk dhsajk dhlorem sjdh aksd hajsk dhsajk dhlorem
-                            sjdh aksd hajsk dhsajk dhlorem sjdh aksd hajsk
-                            dhsajk dhlorem sjdh aksd hajsk dhsajk dhlorem sjdh
-                            aksd hajsk dhsajk dhlorem sjdh aksd hajsk dhsajk
-                            dhlorem sjdh aksd hajsk dhsajk dhlorem sjdh aksd
-                            hajsk dhsajk dhlorem sjdh aksd hajsk dhsajk dhlorem
-                            sjdh aksd hajsk dhsajk dhlorem sjdh aksd hajsk
-                            dhsajk dhlorem sjdh aksd hajsk dhsajk dhlorem sjdh
-                            aksd hajsk dhsajk dhlorem sjdh aksd hajsk dhsajk dh
-                            lorem sjdh aksd hajsk dhsajk dhlorem sjdh aksd hajsk
-                            dhsajk dhlorem sjdh aksd hajsk dhsajk dhlorem sjdh
-                            aksd hajsk dhsajk dhlorem sjdh aksd hajsk dhsajk
-                            dhlorem sjdh aksd hajsk dhsajk dhlorem sjdh aksd
-                            hajsk dhsajk dhlorem sjdh aksd hajsk dhsajk dhlorem
-                            sjdh aksd hajsk dhsajk dhlorem sjdh aksd hajsk
-                            dhsajk dhlorem sjdh aksd hajsk dhsajk dhlorem sjdh
-                            aksd hajsk dhsajk dhlorem sjdh aksd hajsk dhsajk
-                            dhlorem sjdh aksd hajsk dhsajk dhlorem sjdh aksd
-                            hajsk dhsajk dhlorem sjdh aksd hajsk dhsajk dhlorem
-                            sjdh aksd hajsk dhsajk dhlorem sjdh aksd hajsk
-                            dhsajk dhlorem sjdh aksd hajsk dhsajk dhlorem sjdh
-                            aksd hajsk dhsajk dhlorem sjdh aksd hajsk dhsajk
-                            dhlorem sjdh aksd hajsk dhsajk dhlorem sjdh aksd
-                            hajsk dhsajk dhlorem sjdh aksd hajsk dhsajk dhlorem
-                            sjdh aksd hajsk dhsajk dhlorem sjdh aksd hajsk
-                            dhsajk dhlorem sjdh aksd hajsk dhsajk dhlorem sjdh
-                            aksd hajsk dhsajk dhloremlorem sjdh aksd hajsk
-                            dhsajk dhlorem sjdh aksd hajsk dhsajk dhlorem sjdh
-                            aksd hajsk dhsajk dhlorem sjdh aksd hajsk dhsajk
-                            dhlorem sjdh aksd hajsk dhsajk dhlorem sjdh aksd
-                            hajsk dhsajk dhlorem sjdh aksd hajsk dhsajk dhlorem
-                            sjdh aksd hajsk dhsajk dhlorem sjdh aksd hajsk
-                            dhsajk dhlorem sjdh aksd hajsk dhsajk dhlorem sjdh
-                            aksd hajsk dhsajk dhlorem sjdh aksd hajsk dhsajk
-                            dhlorem sjdh aksd hajsk dhsajk dhlorem sjdh aksd
-                            hajsk dhsajk dhlorem sjdh aksd hajsk dhsajk dhlorem
-                            sjdh aksd hajsk dhsajk dhlorem sjdh aksd hajsk
-                            dhsajk dhlorem sjdh aksd hajsk dhsajk dhlorem sjdh
-                            aksd hajsk dhsajk dhlorem sjdh aksd hajsk dhsajk
-                            dhlorem sjdh aksd hajsk dhsajk dhlorem sjdh aksd
-                            hajsk dhsajk dhlorem sjdh aksd hajsk dhsajk dhlorem
-                            sjdh aksd hajsk dhsajk dhlorem sjdh aksd hajsk
-                            dhsajk dhlorem sjdh aksd hajsk dhsajk dhlorem sjdh
-                            aksd hajsk dhsajk dhlorem sjdh aksd hajsk dhsajk
-                            dhloremlorem sjdh aksd hajsk dhsajk dhlorem sjdh
-                            aksd hajsk dhsajk dhlorem sjdh aksd hajsk dhsajk
-                            dhlorem sjdh aksd hajsk dhsajk dhlorem sjdh aksd
-                            hajsk dhsajk dhlorem sjdh aksd hajsk dhsajk dhlorem
-                            sjdh aksd hajsk dhsajk dhlorem sjdh aksd hajsk
-                            dhsajk dhlorem sjdh aksd hajsk dhsajk dhlorem sjdh
-                            aksd hajsk dhsajk dhlorem sjdh aksd hajsk dhsajk
-                            dhlorem sjdh aksd hajsk dhsajk dhlorem sjdh aksd
-                            hajsk dhsajk dhlorem sjdh aksd hajsk dhsajk dhlorem
-                            sjdh aksd hajsk dhsajk dhlorem sjdh aksd hajsk
-                            dhsajk dhlorem sjdh aksd hajsk dhsajk dhlorem sjdh
-                            aksd hajsk dhsajk dhlorem sjdh aksd hajsk dhsajk
-                            dhlorem sjdh aksd hajsk dhsajk dhlorem sjdh aksd
-                            hajsk dhsajk dhlorem sjdh aksd hajsk dhsajk dhlorem
-                            sjdh aksd hajsk dhsajk dhlorem sjdh aksd hajsk
-                            dhsajk dhlorem sjdh aksd hajsk dhsajk dhlorem sjdh
-                            aksd hajsk dhsajk dhlorem sjdh aksd hajsk dhsajk
-                            dhlorem sjdh aksd hajsk dhsajk dhloremlorem sjdh
-                            aksd hajsk dhsajk dhlorem sjdh aksd hajsk dhsajk
-                            dhlorem sjdh aksd hajsk dhsajk dhlorem sjdh aksd
-                            hajsk dhsajk dhlorem sjdh aksd hajsk dhsajk dhlorem
-                            sjdh aksd hajsk dhsajk dhlorem sjdh aksd hajsk
-                            dhsajk dhlorem sjdh aksd hajsk dhsajk dhlorem sjdh
-                            aksd hajsk dhsajk dhlorem sjdh aksd hajsk dhsajk
-                            dhlorem sjdh aksd hajsk dhsajk dhlorem sjdh aksd
-                            hajsk dhsajk dhlorem sjdh aksd hajsk dhsajk dhlorem
-                            sjdh aksd hajsk dhsajk dhlorem sjdh aksd hajsk
-                            dhsajk dhlorem sjdh aksd hajsk dhsajk dhlorem sjdh
-                            aksd hajsk dhsajk dhlorem sjdh aksd hajsk dhsajk
-                            dhlorem sjdh aksd hajsk dhsajk dhlorem sjdh aksd
-                            hajsk dhsajk dhlorem sjdh aksd hajsk dhsajk dhlorem
-                            sjdh aksd hajsk dhsajk dhlorem sjdh aksd hajsk
-                            dhsajk dhlorem sjdh aksd hajsk dhsajk dhlorem sjdh
-                            aksd hajsk dhsajk dhlorem sjdh aksd hajsk dhsajk
-                            dhlorem sjdh aksd hajsk dhsajk dhlorem sjdh aksd
-                            hajsk dhsajk dhloremlorem sjdh aksd hajsk dhsajk
-                            dhlorem sjdh aksd hajsk dhsajk dhlorem sjdh aksd
-                            hajsk dhsajk dhlorem sjdh aksd hajsk dhsajk dhlorem
-                            sjdh aksd hajsk dhsajk dhlorem sjdh aksd hajsk
-                            dhsajk dhlorem sjdh aksd hajsk dhsajk dhlorem sjdh
-                            aksd hajsk dhsajk dhlorem sjdh aksd hajsk dhsajk
-                            dhlorem sjdh aksd hajsk dhsajk dhlorem sjdh aksd
-                            hajsk dhsajk dhlorem sjdh aksd hajsk dhsajk dhlorem
-                            sjdh aksd hajsk dhsajk dhlorem sjdh aksd hajsk
-                            dhsajk dhlorem sjdh aksd hajsk dhsajk dhlorem sjdh
-                            aksd hajsk dhsajk dhlorem sjdh aksd hajsk dhsajk
-                            dhlorem sjdh aksd hajsk dhsajk dhlorem sjdh aksd
-                            hajsk dhsajk dhlorem sjdh aksd hajsk dhsajk dhlorem
-                            sjdh aksd hajsk dhsajk dhlorem sjdh aksd hajsk
-                            dhsajk dhlorem sjdh aksd hajsk dhsajk dhlorem sjdh
-                            aksd hajsk dhsajk dhlorem sjdh aksd hajsk dhsajk
-                            dhlorem sjdh aksd hajsk dhsajk dhlorem sjdh aksd
-                            hajsk dhsajk dhlorem sjdh aksd hajsk dhsajk dhlorem
-                            hajsk dhsajk dhlorem sjdh aksd hajsk dhsajk dhlorem
-                            sjdh aksd hajsk dhsajk dhlorem sjdh aksd hajsk
-                            dhsajk dhlorem sjdh aksd hajsk dhsajk dhlorem sjdh
-                            aksd hajsk dhsajk dhlorem sjdh aksd hajsk dhsajk
-                            dhlorem sjdh aksd hajsk dhsajk dhlorem sjdh aksd
-                            hajsk dhsajk dhlorem sjdh aksd hajsk dhsajk dhlorem
-                            sjdh aksd hajsk dhsajk dhlorem sjdh aksd hajsk
-                            dhsajk dhlorem sjdh aksd hajsk dhsajk dhlorem sjdh
-                            aksd hajsk dhsajk dhlorem sjdh aksd hajsk dhsajk
-                            dhlorem sjdh aksd hajsk dhsajk dhlorem sjdh aksd
-                            hajsk dhsajk dhlorem sjdh aksd hajsk dhsajk dhlorem
-                        </p>
+                        <p>{randomText}</p>
                     </div>
                 </section>
             </div>
