@@ -1,7 +1,6 @@
 import React from 'react';
 import { AiOutlineCloseCircle } from 'react-icons/ai';
 import { motion } from 'framer-motion';
-import Alert from './Alert';
 
 const Modal = ({
     createNote,
@@ -54,7 +53,6 @@ const Modal = ({
                 onChange={(e) => setText(e.target.value)}
                 value={text}
             />
-            <Alert />
             <button className="add-note" onClick={createNote}>
                 Add Note
             </button>

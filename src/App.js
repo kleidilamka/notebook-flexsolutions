@@ -52,7 +52,7 @@ function App() {
         item.title.toLocaleLowerCase().includes(filteredTitle)
     );
 
-    const toggleModal = () => {
+    const goToModal = () => {
         setOpenModal(true);
     };
 
@@ -107,8 +107,8 @@ function App() {
                             setFilteredTitle(e.target.value.toLocaleLowerCase())
                         }
                     />
-                    <button className="add-button" onClick={toggleModal}>
-                        Add Note
+                    <button className="add-button" onClick={goToModal}>
+                        Add note
                     </button>
                     <div className="notes">
                         {!searchFilter.length && (
