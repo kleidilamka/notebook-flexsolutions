@@ -9,7 +9,11 @@ const Modal = ({
     setTitle,
     category,
     setCategory,
+    text,
+    setText,
     closeModal,
+    isEditing,
+    editItem,
 }) => {
     return (
         <motion.div
@@ -22,7 +26,7 @@ const Modal = ({
             }}
             className="modal-wrapper"
         >
-            <motion.div className="inputs-top-container">
+            <motion.form className="inputs-top-container">
                 <motion.div className="modal-inputs">
                     <input
                         className="modal-input"
@@ -45,14 +49,19 @@ const Modal = ({
                     size={30}
                     onClick={closeModal}
                 />
-            </motion.div>
+            </motion.form>
             <textarea
                 className="modal-description"
                 placeholder="Description..."
+                onChange={(e) => setText(e.target.value)}
+                value={text}
             />
             <Alert />
-            <button className="add-note" onClick={createNote}>
-                Add Note
+            <button
+                className="add-note"
+                onClick={isEditing ? editItem : createNote}
+            >
+                {isEditing ? 'Edit Note!' : 'Add new note!'}
             </button>
         </motion.div>
     );

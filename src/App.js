@@ -35,6 +35,9 @@ function App() {
     const [date, setDate] = useState('');
     const [categories, setCategories] = useState(getLocalStorageCtg());
     const [alert, setAlert] = useState({ show: false, msg: '', type: '' });
+    const [isEditing, setIsEditing] = useState(false);
+    const [editId, setEditId] = useState(null);
+    const [selectedId, setSelectedId] = useState('');
 
     const [openModal, setOpenModal] = useState(false);
     const [openEdit, setOpenEdit] = useState(false);
@@ -50,6 +53,7 @@ function App() {
 
     const toggleOpenEdit = () => {
         setOpenEdit(true);
+        setIsEditing(true);
     };
 
     const closeModal = () => {
@@ -61,6 +65,28 @@ function App() {
         e.preventDefault();
         if (!title) {
             showAlert(true, 'danger', 'Please enter a value!');
+        } else if (title && isEditing) {
+            setList(
+                list.map((item) => {
+                    if (item.id === editId) {
+                        return {
+                            ...item,
+                            title: title,
+                            category: category,
+                            text: text,
+                            date: Date.now(),
+                        };
+                    }
+                    return item;
+                })
+            );
+            setTitle('');
+            setText('');
+            setCategory('');
+            setEditId(null);
+            setIsEditing(false);
+            setDate('');
+            showAlert(true, 'success', 'Value changed!');
         } else {
             showAlert(true, 'success', 'Value added to the list!');
             const newItem = {
@@ -83,6 +109,15 @@ function App() {
         setAlert({ show, type, msg });
     };
 
+    const editItem = (id) => {
+        const editItem = list.find((item) => item.id === id);
+        setIsEditing(true);
+        setEditId(id);
+        setTitle(editItem.title);
+        setCategory(editItem.category);
+        setText(editItem.text);
+    };
+
     return (
         <div className="App">
             <div className="root">
@@ -94,26 +129,39 @@ function App() {
                         setTitle={setTitle}
                         category={category}
                         setCategory={setCategory}
+                        text={text}
+                        setText={setText}
+                        isEditing={isEditing}
+                        editItem={editItem}
                     />
                 ) : null}
                 <section className="section one">
                     <input className="input" placeholder="Search Note" />
-                    <button className={`add-button`} onClick={toggleModal}>
+                    <button className="add-button" onClick={toggleModal}>
                         Add Note
                     </button>
                     <div className="notes">
                         {list.map((item) => {
-                            return <Note item={item} date={date} />;
+                            return (
+                                <Note
+                                    key={item.id}
+                                    item={item}
+                                    date={date}
+                                    selectedId={selectedId}
+                                    setSelectedId={setSelectedId}
+                                    text={text}
+                                />
+                            );
                         })}
                     </div>
                 </section>
                 <section className="section two">
                     <div className="categories">
                         {categories.map((item) => {
-                            return <Categories item={item} />;
+                            return <Categories item={item} key={item} />;
                         })}
                     </div>
-                    <div class="note-content-top">
+                    <div className="note-content-top">
                         <h3>Note Title</h3>
                         <MdOutlineModeEditOutline
                             className="edit-btn"
@@ -122,7 +170,11 @@ function App() {
                         />
                     </div>
                     <div className="note-content">
-                        <p>{randomText}</p>
+                        {list
+                            .filter((item) => item.id === selectedId)
+                            .map((item) => {
+                                return <p>{item.text}</p>;
+                            })}
                     </div>
                 </section>
             </div>
