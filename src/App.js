@@ -76,6 +76,7 @@ function App() {
             setText('');
             setDate('');
             categories.push(newItem.category);
+            window.location.reload();
         }
     };
 
@@ -153,7 +154,7 @@ function App() {
                                 setCtgData(list);
                             }}
                         >
-                            <h3>all</h3>
+                            <h3>All</h3>
                         </div>
                         {categories.map((item, index) => {
                             return (
@@ -162,8 +163,6 @@ function App() {
                                     onClick={() => {
                                         changeCtg(item);
                                         setSelectCtg(index);
-
-                                        console.log(item);
                                     }}
                                     style={{ marginLeft: 10 }}
                                 >
