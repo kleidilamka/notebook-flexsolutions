@@ -12,8 +12,6 @@ const Modal = ({
     text,
     setText,
     closeModal,
-    isEditing,
-    editItem,
 }) => {
     return (
         <motion.div
@@ -57,11 +55,8 @@ const Modal = ({
                 value={text}
             />
             <Alert />
-            <button
-                className="add-note"
-                onClick={isEditing ? editItem : createNote}
-            >
-                {isEditing ? 'Edit Note!' : 'Add new note!'}
+            <button className="add-note" onClick={createNote}>
+                Add Note
             </button>
         </motion.div>
     );

@@ -1,12 +1,11 @@
 import React from 'react';
 import moment from 'moment';
 
-const Note = ({ item, selectedId, setSelectedId }) => {
-    const jari = () => {
+const Note = ({ item, selectedId, setSelectedId, toggleOpenEdit }) => {
+    const selectItem = () => {
         setSelectedId(item.id);
-        console.log(item.id, 'id1');
-        console.log(selectedId, 'id2');
     };
+
     return (
         <div
             className="note"
@@ -14,7 +13,7 @@ const Note = ({ item, selectedId, setSelectedId }) => {
                 backgroundColor:
                     item.id === selectedId ? '#ffff' : 'transparent',
             }}
-            onClick={() => jari()}
+            onClick={() => selectItem()}
         >
             <div className="top-note">
                 <p>{item.title}</p>
