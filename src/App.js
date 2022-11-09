@@ -158,16 +158,12 @@ function App() {
                         </div>
                         {categories.map((item, index) => {
                             return (
-                                <div
-                                    key={index}
-                                    onClick={() => {
-                                        changeCtg(item);
-                                        setSelectCtg(index);
-                                    }}
-                                    style={{ marginLeft: 10 }}
-                                >
-                                    <h3>{item}</h3>
-                                </div>
+                                <Categories
+                                    item={item}
+                                    index={index}
+                                    changeCtg={changeCtg}
+                                    selectCtg={selectCtg}
+                                />
                             );
                         })}
                     </div>

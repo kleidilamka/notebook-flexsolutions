@@ -1,9 +1,16 @@
 import React from 'react';
 
-const Categories = ({ item }) => {
+const Categories = ({ item, index, changeCtg, setSelectCtg }) => {
     return (
-        <div className="category">
-            <h4>{item}</h4>
+        <div
+            key={index}
+            onClick={() => {
+                changeCtg(item);
+                setSelectCtg(index);
+            }}
+            style={{ marginLeft: 10 }}
+        >
+            <h3>{item}</h3>
         </div>
     );
 };
